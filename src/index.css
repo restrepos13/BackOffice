@@ -1,0 +1,297 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #e6e1dd;
+  --color-panel: #ddd7d1;
+  --color-card: #efebe6;
+  --color-card2: #e0dad3;
+  --color-line: #c8c1b8;
+  --color-ink: #1a1a1a;
+  --color-muted: #6f6961;
+  --color-navy: #1a1a1a;
+  --color-navy2: #242424;
+  --color-navyline: #3d3d3d;
+  --color-vio: #1a1a1a;
+  --color-mag: #8a7f72;
+  --color-sky: #cfc8c0;
+  --font-sans: "Geist", "Inter", system-ui, sans-serif;
+  --font-display: "Anton", "Arial Narrow", sans-serif;
+  --font-serif: "Playfair Display", Georgia, serif;
+  /* Curvas fuertes; las built-in del navegador son demasiado débiles */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --default-transition-timing-function: var(--ease-out);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Display editorial: condensada, en mayúsculas, interlineado apretado */
+h1, h2, h3, .font-display {
+  text-transform: uppercase;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+
+/* Acento editorial: serif itálica en minúscula (reemplaza al viejo gradiente) */
+.text-grad {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  color: inherit;
+}
+
+/* Sólido de marca: tinta */
+.bg-grad {
+  background: var(--color-ink);
+}
+
+/* Grilla vertical de fondo, estilo editorial */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    90deg,
+    transparent 0,
+    transparent calc(20% - 1px),
+    rgba(26, 26, 26, 0.055) calc(20% - 1px),
+    rgba(26, 26, 26, 0.055) 20%
+  );
+}
+
+/* Grano sutil */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+::selection {
+  background: rgba(26, 26, 26, 0.85);
+  color: #e6e1dd;
+}
+
+/* Entrada del hero al cargar (una vez por visita: presupuesto de delight).
+   El blur enmascara el crossfade: un solo objeto materializándose */
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(16px); filter: blur(6px); }
+  to { opacity: 1; transform: none; filter: blur(0); }
+}
+.rise {
+  opacity: 0;
+  animation: rise-in 0.6s var(--ease-out) both;
+  animation-delay: var(--rise-delay, 0s);
+}
+@keyframes rise-in-phone {
+  from { opacity: 0; transform: translateY(20px) scale(0.97); filter: blur(8px); }
+  to { opacity: 1; transform: none; filter: blur(0); }
+}
+.rise-phone {
+  opacity: 0;
+  animation: rise-in-phone 0.7s var(--ease-out) both;
+  animation-delay: var(--rise-delay, 0s);
+}
+
+/* Burbujas de la maqueta de chat */
+@keyframes msg-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+.msg-anim {
+  opacity: 0;
+  animation: msg-in 0.5s var(--ease-out) both;
+}
+
+@keyframes dot-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+.dot-pulse { animation: dot-pulse 2s infinite; }
+
+@keyframes typing-bounce {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-4px); }
+}
+.typing-dot { animation: typing-bounce 1.2s infinite; }
+
+/* Marquee editorial: movimiento constante = linear; pausa al hover */
+@keyframes marquee {
+  to { transform: translateX(-50%); }
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 24s linear infinite;
+}
+@media (hover: hover) and (pointer: fine) {
+  .marquee-wrap:hover .marquee-track {
+    animation-play-state: paused;
+  }
+}
+
+/* Reveal bidireccional al hacer scroll; salida más rápida que la entrada */
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  filter: blur(4px);
+  transition:
+    opacity 0.35s var(--ease-out),
+    transform 0.35s var(--ease-out),
+    filter 0.35s var(--ease-out);
+  transition-delay: 0s;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: none;
+  filter: blur(0);
+  transition-duration: 0.6s;
+  transition-delay: var(--reveal-delay, 0s);
+}
+
+/* Con soporte nativo, la aparición/desaparición queda atada al progreso del scroll */
+@supports (animation-timeline: view()) {
+  .reveal,
+  .reveal.visible {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    transition: none;
+    animation: sd-out linear both;
+    animation-timeline: view();
+    animation-range: exit 40% exit 95%;
+  }
+  .reveal-inner {
+    animation: sd-in linear both;
+    animation-timeline: view();
+    animation-range: entry 5% entry 55%;
+  }
+}
+@keyframes sd-in {
+  from { opacity: 0; transform: translateY(30px); filter: blur(5px); }
+  to { opacity: 1; transform: none; filter: blur(0); }
+}
+@keyframes sd-out {
+  from { opacity: 1; transform: none; filter: blur(0); }
+  to { opacity: 0; transform: translateY(-26px); filter: blur(5px); }
+}
+
+/* Firma de la casa: títulos palabra por palabra desde una máscara */
+.wline {
+  display: inline-block;
+  overflow: clip;
+  vertical-align: bottom;
+  padding-bottom: 0.12em;
+  margin-bottom: -0.12em;
+}
+.wword {
+  display: inline-block;
+  transform: translateY(118%);
+  transition: transform 0.3s var(--ease-out);
+  transition-delay: 0s;
+}
+.reveal.visible .wword {
+  transform: none;
+  transition-duration: 0.7s;
+  transition-delay: calc(var(--w-i, 0) * 36ms + var(--reveal-delay, 0s));
+}
+
+/* Las fotos de modelos se revelan con clip-path; inset negativo para no recortar sombras */
+.clip-reveal {
+  clip-path: inset(-25% -25% 100% -25%);
+  transition: clip-path 0.9s var(--ease-out);
+  transition-delay: var(--clip-delay, 0s);
+}
+.reveal.visible .clip-reveal {
+  clip-path: inset(-25% -25% -25% -25%);
+}
+
+/* La gráfica del dashboard se "dibuja" al entrar en viewport */
+.chart-bar {
+  transform: scaleY(0.15);
+  transform-origin: bottom;
+  opacity: 0.4;
+}
+.reveal.visible .chart-bar {
+  animation: bar-grow 0.7s var(--ease-out) both;
+  animation-delay: var(--bar-delay, 0s);
+}
+@keyframes bar-grow {
+  from { transform: scaleY(0.15); opacity: 0.4; }
+  to { transform: scaleY(1); opacity: 1; }
+}
+
+/* Las líneas del diagrama se trazan al entrar en viewport */
+.draw-line {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+.reveal.visible .draw-line {
+  animation: draw 0.9s var(--ease-in-out) both;
+  animation-delay: var(--draw-delay, 0s);
+}
+@keyframes draw {
+  to { stroke-dashoffset: 0; }
+}
+.node-pulse {
+  opacity: 0;
+}
+.reveal.visible .node-pulse {
+  animation: node-in 0.5s var(--ease-out) 0.8s both;
+}
+@keyframes node-in {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Menos movimiento, no cero */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .rise,
+  .rise-phone {
+    animation-name: msg-in;
+    animation-duration: 0.3s;
+  }
+  .rise, .rise-phone, .msg-anim { transform: none; }
+  @keyframes msg-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  .msg-anim { animation-duration: 0.3s; }
+  .reveal, .reveal.visible {
+    filter: none;
+    transform: none;
+    transition: opacity 0.4s ease;
+    animation: none;
+    opacity: 1;
+  }
+  .reveal:not(.visible) { opacity: 0; }
+  .reveal-inner { animation: none; }
+  .wword, .reveal.visible .wword { transform: none; transition: none; }
+  .typing-dot { animation: none; }
+  .marquee-track { animation-play-state: paused; }
+  .clip-reveal { clip-path: none; transition: none; }
+  .chart-bar { transform: none; opacity: 1; }
+  .reveal.visible .chart-bar { animation: none; }
+  .draw-line { stroke-dashoffset: 0; }
+  .reveal.visible .draw-line { animation: none; }
+  .node-pulse { opacity: 1; }
+  .reveal.visible .node-pulse { animation: none; }
+}
