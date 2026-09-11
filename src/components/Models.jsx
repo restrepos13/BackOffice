@@ -11,7 +11,7 @@ function ModelPhoto({ src, className = '', style, chip }) {
         src={src}
         alt="Modelo hiperrealista generada con IA"
         loading="lazy"
-        className="block h-full w-full object-cover"
+        className="block h-full w-full object-cover object-top"
         onError={(e) => {
           e.currentTarget.style.display = 'none'
           e.currentTarget.nextElementSibling.style.display = 'flex'
