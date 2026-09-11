@@ -1,7 +1,7 @@
 import Reveal from './Reveal.jsx'
 import { Badge, Icon, Overline, WordReveal } from './ui.jsx'
 
-function ModelPhoto({ src, className = '', style, chip }) {
+function ModelPhoto({ src, className = '', style, chip, focus = '50% 35%' }) {
   return (
     <div
       className={`relative overflow-hidden rounded-none border border-line bg-card2 shadow-[0_40px_80px_-20px_rgba(16,18,35,0.25)] ${className}`}
@@ -11,7 +11,8 @@ function ModelPhoto({ src, className = '', style, chip }) {
         src={src}
         alt="Modelo hiperrealista generada con IA"
         loading="lazy"
-        className="block h-full w-full object-cover object-top"
+        className="block h-full w-full object-cover"
+        style={{ objectPosition: focus }}
         onError={(e) => {
           e.currentTarget.style.display = 'none'
           e.currentTarget.nextElementSibling.style.display = 'flex'
@@ -70,11 +71,13 @@ export default function Models() {
             <ModelPhoto
               src="./models/modelo-1.jpg"
               chip="✦ 100% generada con IA"
+              focus="50% 42%"
               className="clip-reveal z-10 aspect-[3/4] w-[58%] motion-safe:-rotate-2"
             />
             <ModelPhoto
               src="./models/modelo-2.jpg"
               chip="✦ 100% generada con IA"
+              focus="50% 62%"
               className="clip-reveal -ml-14 mt-16 aspect-[3/4] w-[52%] motion-safe:rotate-3"
               style={{ '--clip-delay': '180ms' }}
             />
